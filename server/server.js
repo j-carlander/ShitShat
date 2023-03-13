@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config()
+dotenv.config();
 import express from 'express';
 import mongoose from 'mongoose';
 import url from 'url';
@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 async function connect() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.URI);
     console.log("Connected to MongoDB");
   } catch (error) {
     console.error(error);
@@ -26,4 +26,6 @@ async function connect() {
 connect();
 
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT, () => {
+  console.log("Server is running..");
+});
