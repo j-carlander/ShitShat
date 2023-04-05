@@ -15,7 +15,7 @@ export function fetchCollection(name) {
 };
 
 async function connect() {
-if(dbConnection == undefined){
+if(dbConnection != undefined){
   return dbConnection
 }
 
