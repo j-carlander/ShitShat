@@ -5,6 +5,9 @@ function auth(req, res, next) {
   next();
 }
 
-
-function admin()
-export default {auth};
+function admin(req, res, next) {
+  if (req.userDetails.role != "admin")
+    return res.status(403).send("Not allowed");
+  next();
+}
+export default { auth, admin };

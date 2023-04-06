@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import authFilter from "../filter/authFilters.js";
+import { fetchCollection } from "../mongo/mongoDB.js";
 dotenv.config();
 
 const router = express.Router();
@@ -10,36 +11,61 @@ router.get("/", (req, res) => {
 });
 
 // for all users to se all emergency messages
-router.get("/broadcast", (req, res) => {
-  res.send("emergency messages");
+router.get("/broadcast", async (req, res) => {
+  try {
+    let result = await fetchCollection("broadcast").find().toArray();
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
 });
 
 // for all users to se all channels
-router.get("/channel", (req, res) => {
-  res.send("channel list");
+router.get("/channel", async (req, res) => {
+  try {
+    let result = await fetchCollection("channels").find().toArray();
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
 });
 
 // adding middelware,
 // all routes below needs to authorize
-router.use(authFilter);
+router.use(authFilter.auth);
 
-// connect to channel, user needs to sign in
-router.get("/channel/:id", (req, res) => {
-  res.send("messages for channel with id , socket.io");
+// connect to channel, user needs to have signed in
+router.get("/channel/:id", async (req, res) => {
+  let requestedChannel = req.params.id;
+  try {
+    let result = await fetchCollection(requestedChannel).find().toArray();
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
 });
 
-// create a new channel, user needs to sign in
+// create a new channel, user needs to have signed in
 router.put("/channel", (req, res) => {
   res.send("new channel, title: req.body.title");
 });
 
-// send message to channel, user needs to sign in
+// send message to channel, user needs to have signed in
 router.post("/channel/:id", (req, res) => {
+  let requestedChannel = req.params.id;
   res.send("message for channel id, recived");
 });
 
-// delete a channel with id, user needs to sign in
+//adding middleware
+// all routed below need to be admin
+router.use(authFilter.admin);
+
+// for admin, delete a channel with id
 router.delete("/channel/:id", (req, res) => {
+  let requestedChannel = req.params.id;
   res.send("channel with id deleted");
 });
 
