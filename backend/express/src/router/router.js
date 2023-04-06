@@ -49,14 +49,26 @@ router.get("/channel/:id", async (req, res) => {
 });
 
 // create a new channel, user needs to have signed in
-router.put("/channel", (req, res) => {
-  res.send("new channel, title: req.body.title");
+router.put("/channel", async (req, res) => {
+  let result = await fetchCollection("channels").findOne(req.body);
+  if (result) {
+    console.log("room exists: ", result);
+    res.send("room exists, title: " + req.body.title);
+    return;
+  }
+  let created = await fetchCollection("channels").insertOne(req.body);
+  res.json(created);
 });
 
 // send message to channel, user needs to have signed in
-router.post("/channel/:id", (req, res) => {
-  let requestedChannel = req.params.id;
-  res.send("message for channel id, recived");
+router.post("/channel/:id", async (req, res) => {
+  let toChannel = req.params.id;
+  let msgBody = req.body;
+  msgBody.recieved = new Date();
+  msgBody.author = req.userDetails.username;
+
+  let created = await fetchCollection(toChannel).insertOne(msgBody);
+  res.send("message for channel " + toChannel + ", recived");
 });
 
 //adding middleware
