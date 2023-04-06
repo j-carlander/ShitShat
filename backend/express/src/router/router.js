@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import authFilter from "../filter/authFilters.js";
 dotenv.config();
 
 const router = express.Router();
@@ -8,10 +9,19 @@ router.get("/", (req, res) => {
   res.status(200).json({ msg: "up and running" });
 });
 
+// for all users to se all emergency messages
+router.get("/broadcast", (req, res) => {
+  res.send("emergency messages");
+});
+
 // for all users to se all channels
 router.get("/channel", (req, res) => {
   res.send("channel list");
 });
+
+// adding middelware,
+// all routes below needs to authorize
+router.use(authFilter);
 
 // connect to channel, user needs to sign in
 router.get("/channel/:id", (req, res) => {
@@ -31,11 +41,6 @@ router.post("/channel/:id", (req, res) => {
 // delete a channel with id, user needs to sign in
 router.delete("/channel/:id", (req, res) => {
   res.send("channel with id deleted");
-});
-
-// for all users to se all emergency messages
-router.get("/broadcast", (req, res) => {
-  res.send("emergency messages");
 });
 
 // for admin to send emergency message to be broadcast to all users

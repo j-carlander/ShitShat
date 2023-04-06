@@ -11,7 +11,9 @@ function generateToken(payload) {
 
   return token;
 }
-
-function verifyToken() {}
+// TODO: fix using jwt.verify
+function verifyToken() {
+  return true;
+}
 
 export default { generateToken, verifyToken };
