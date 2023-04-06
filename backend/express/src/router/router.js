@@ -24,7 +24,7 @@ router.get("/broadcast", async (req, res) => {
 // for all users to se all channels
 router.get("/channel", async (req, res) => {
   try {
-    let result = await fetchCollection("channels").find().toArray();
+    let result = await fetchCollection("channelList").find().toArray();
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
@@ -54,14 +54,14 @@ router.put("/channel", async (req, res) => {
   const title = req.body;
 
   try {
-  let existingChannel = await fetchCollection('channels').findOne(title);
+  let existingChannel = await fetchCollection('channelList').findOne(title);
 
   if(existingChannel) {
     res.send("Room already exist");  
     return console.log("existingChannel =", existingChannel.title);
   }
     
-    let newChannel = await fetchCollection("channels").insertOne(title);
+    let newChannel = await fetchCollection("channelList").insertOne(title);
 
     res.send("new channel created");
   }catch(err) {
