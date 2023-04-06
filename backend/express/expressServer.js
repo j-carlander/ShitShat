@@ -15,4 +15,4 @@ app.listen(port, () => {
   console.log("Server started, listening on port: " + port);
 });
 
-console.log(process.env.URI);
+// console.log(process.env.URI);

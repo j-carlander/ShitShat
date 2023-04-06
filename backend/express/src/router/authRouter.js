@@ -42,17 +42,18 @@ auth.post("/register", async (req, res) => {
     return res.status(400).send("Missing user details");
   }
 
-  let hash = await bcrypt.hash(req.body.password, 10);
+  let passwordHash = await bcrypt.hash(req.body.password, 10);
   let user = {
     first_name: req.body.firstName,
     last_name: req.body.lastName,
     username: generateUsername(req.body.firstName, req.body.lastName),
     email: req.body.email,
-    password: hash,
+    password: passwordHash,
+    admin: false,
   };
 
   let registered = await registerUserInDb(user);
-  res.send("user created");
+  res.status(registered.status).json(registered.result);
 });
 
 export default auth;
