@@ -21,7 +21,7 @@ function connect() {
   }
 
   try {
-    const client = new MongoClient(process.env.OLDURI);
+    const client = new MongoClient(process.env.URI);
     dbConnection = client.db("ShitShat");
     console.log("Connected to MongoDB Atlas, ShitShat");
     return dbConnection;
