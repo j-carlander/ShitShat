@@ -50,14 +50,22 @@ router.get("/channel/:id", async (req, res) => {
 
 // create a new channel, user needs to have signed in
 router.put("/channel", async (req, res) => {
-  let result = await fetchCollection("channels").findOne(req.body);
-  if (result) {
-    console.log("room exists: ", result);
-    res.send("room exists, title: " + req.body.title);
-    return;
+  const title = req.body;
+
+  try {
+    let existingChannel = await fetchCollection("channels").findOne(title);
+
+    if (existingChannel) {
+      res.send("Room already exist");
+      return console.log("existingChannel =", existingChannel.title);
+    }
+
+    let newChannel = await fetchCollection("channels").insertOne(title);
+
+    res.send("new channel created");
+  } catch (err) {
+    console.log(err);
   }
-  let created = await fetchCollection("channels").insertOne(req.body);
-  res.json(created);
 });
 
 // send message to channel, user needs to have signed in
