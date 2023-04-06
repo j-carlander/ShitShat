@@ -50,31 +50,33 @@ router.get("/channel/:id", async (req, res) => {
 
 // create a new channel, user needs to have signed in
 router.put("/channel", async (req, res) => {
-
   const title = req.body;
 
   try {
-  let existingChannel = await fetchCollection('channelList').findOne(title);
+    let existingChannel = await fetchCollection("channelList").findOne(title);
 
-  if(existingChannel) {
-    res.send("Room already exist");  
-    return console.log("existingChannel =", existingChannel.title);
-  }
-    
+    if (existingChannel) {
+      res.send("Room already exist");
+      return console.log("existingChannel =", existingChannel.title);
+    }
+
     let newChannel = await fetchCollection("channelList").insertOne(title);
 
     res.send("new channel created");
-  }catch(err) {
+  } catch (err) {
     console.log(err);
-  };
-
-  
+  }
 });
 
 // send message to channel, user needs to have signed in
-router.post("/channel/:id", (req, res) => {
-  let requestedChannel = req.params.id;
-  res.send("message for channel id, recived");
+router.post("/channel/:id", async (req, res) => {
+  let toChannel = req.params.id;
+  let msgBody = req.body;
+  msgBody.recieved = new Date().toLocaleString();
+  msgBody.author = req.userDetails.username;
+
+  let created = await fetchCollection(toChannel).insertOne(msgBody);
+  res.send("message for channel " + toChannel + ", recived");
 });
 
 //adding middleware
