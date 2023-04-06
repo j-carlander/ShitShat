@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import path from "path";
-import url from "url";
+// import path from "path";
+// import url from "url";
 import { MongoClient } from "mongodb";
 
 // const __filename = url.fileURLToPath(import.meta.url);
