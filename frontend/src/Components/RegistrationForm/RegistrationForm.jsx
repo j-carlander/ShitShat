@@ -6,6 +6,8 @@ function RegistrationForm() {
 
   return (
     <div className="flex-container">
+      <h1>Welcome!</h1>
+      <p>Register to join us today!</p>
       <form className="registration-form">
         <label className="firstname-label">Firstname</label>
         <input
