@@ -5,12 +5,12 @@ import PageHeader from "../Components/PageHeader/PageHeader";
 import RegistrationForm from "../Components/RegistrationForm/RegistrationForm";
 import PageFooter from "../Components/PageFooter/PageFooter";
 
-const Webpages = () => {
+function Register() {
   return (
     <Router>
-      <Route exact path="/" component={RegistrationForm} />
+      <Route exact path="/register" Component={RegistrationForm} />
     </Router>
   );
-};
+}
 
-export default Webpages;
+export default Register;
