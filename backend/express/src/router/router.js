@@ -75,8 +75,17 @@ router.post("/channel/:id", async (req, res) => {
   msgBody.recieved = new Date().toLocaleString();
   msgBody.author = req.userDetails.username;
 
-  let created = await fetchCollection(toChannel).insertOne(msgBody);
-  res.send("message for channel " + toChannel + ", recived");
+  let checkIfChannelExist = await fetchCollection("channelList").findOne(
+    toChannel
+  );
+
+  if (checkIfChannelExist) {
+    let created = await fetchCollection(toChannel).insertOne(msgBody);
+    res.send("message for channel " + toChannel + ", recived");
+  } else {
+    console.log(toChannel + " Does not exist");
+    res.status(400).send("No such channel");
+  }
 });
 
 //adding middleware
