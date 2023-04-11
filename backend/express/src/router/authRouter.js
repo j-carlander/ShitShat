@@ -9,8 +9,10 @@ const auth = express.Router();
 
 // for user log in
 auth.post("/login", async (req, res) => {
-  let dbUser = await fetchCollection('users').findOne({email:req.body.identifier});
-
+  let dbUser = await fetchCollection("users").findOne({
+    email: req.body.identifier,
+  });
+  console.table(dbUser);
   if (!dbUser) return res.status(400).send("wrong username or password");
 
   let passwordMatch = await bcrypt.compare(req.body.password, dbUser.password);
@@ -18,7 +20,7 @@ auth.post("/login", async (req, res) => {
   if (passwordMatch) {
     let userDetails = {
       username: dbUser.username,
-      role: dbUser.role,
+      admin: dbUser.admin,
     };
     let token = jwtUtil.generateToken(userDetails);
     let responseBody = {

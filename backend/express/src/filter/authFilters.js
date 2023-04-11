@@ -15,14 +15,13 @@ function auth(req, res, next) {
     req.userDetails = authorized;
     next();
   } catch (err) {
-    console.log(err);
+    console.log(err.name);
     res.status(400).send("Invalid token");
   }
 }
 
 function admin(req, res, next) {
-  if (req.userDetails.role != "admin")
-    return res.status(403).send("Not allowed");
+  if (!req.userDetails.admin) return res.status(403).send("Not allowed");
   next();
 }
 export default { auth, admin };

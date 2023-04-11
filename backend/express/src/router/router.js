@@ -84,14 +84,20 @@ router.post("/channel/:id", async (req, res) => {
 router.use(authFilter.admin);
 
 // for admin, delete a channel with id
-router.delete("/channel/:id", (req, res) => {
+router.delete("/channel/:id", async (req, res) => {
   let requestedChannel = req.params.id;
+  let deleted = await fetchCollection(requestedChannel).drop();
   res.send("channel with id deleted");
 });
 
 // for admin to send emergency message to be broadcast to all users
-router.post("/broadcast", (req, res) => {
-  res.send("emergency message sent, socket.io");
+router.post("/broadcast", async (req, res) => {
+  let msgBody = req.body;
+  msgBody.recieved = new Date().toLocaleString();
+  msgBody.author = "Administrator";
+
+  let created = await fetchCollection("broadcast").insertOne(msgBody);
+  res.send("message for channel braodcast, recived");
 });
 
 export default router;
