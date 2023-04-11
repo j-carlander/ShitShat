@@ -11,9 +11,9 @@ function generateToken(payload) {
 
   return token;
 }
-// TODO: fix using jwt.verify
-function verifyToken() {
-  return true;
-}
+// since only returning jwt.verify, put that directly in jwtFilter.
+// function verifyToken(token) {
+//   return jwt.verify(token, process.env.JWT_SECRET);
+// }
 
-export default { generateToken, verifyToken };
+export default { generateToken };
