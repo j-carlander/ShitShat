@@ -37,8 +37,8 @@ router.get("/channel", async (req, res) => {
 router.use(authFilter.auth);
 
 // connect to channel, user needs to have signed in
-router.get("/channel/:id", async (req, res) => {
-  let requestedChannel = req.params.id;
+router.get("/channel/:title", async (req, res) => {
+  let requestedChannel = req.params.title;
   try {
     let result = await fetchCollection(requestedChannel).find().toArray();
     res.status(200).json(result);
@@ -51,16 +51,22 @@ router.get("/channel/:id", async (req, res) => {
 // create a new channel, user needs to have signed in
 router.put("/channel", async (req, res) => {
   const title = req.body;
-
+  title.title = title.title.toLowerCase().replaceAll(" ", "_");
+  console.log("title: ", title);
   try {
     let existingChannel = await fetchCollection("channelList").findOne(title);
 
     if (existingChannel) {
-      res.send("Room already exist");
+      res.status(400).send("Room already exist");
       return console.log("existingChannel =", existingChannel.title);
     }
 
     let newChannel = await fetchCollection("channelList").insertOne(title);
+    let createMsg = {
+      msg: "Channel created",
+      recieved: new Date().toLocaleString(),
+    };
+    let created = await fetchCollection(title.title).insertOne(createMsg);
 
     res.send("new channel created");
   } catch (err) {
@@ -69,8 +75,8 @@ router.put("/channel", async (req, res) => {
 });
 
 // send message to channel, user needs to have signed in
-router.post("/channel/:id", async (req, res) => {
-  let toChannel = req.params.id;
+router.post("/channel/:title", async (req, res) => {
+  let toChannel = req.params.title;
   let msgBody = req.body;
   msgBody.recieved = new Date().toLocaleString();
   msgBody.author = req.userDetails.username;
@@ -80,6 +86,12 @@ router.post("/channel/:id", async (req, res) => {
   );
 
   if (checkIfChannelExist) {
+    let socketURL = "http://127.0.0.1:3000/socket/" + toChannel
+    let fetchOptions = {
+      method: 'POST',
+      body: msgBody
+    }
+    let socket = await fetch(socketURL, fetchOptions)
     let created = await fetchCollection(toChannel).insertOne(msgBody);
     res.send("message for channel " + toChannel + ", recived");
   } else {
@@ -92,11 +104,20 @@ router.post("/channel/:id", async (req, res) => {
 // all routed below need to be admin
 router.use(authFilter.admin);
 
-// for admin, delete a channel with id
-router.delete("/channel/:id", async (req, res) => {
-  let requestedChannel = req.params.id;
-  let deleted = await fetchCollection(requestedChannel).drop();
-  res.send("channel with id deleted");
+// for admin, delete a channel with title
+router.delete("/channel/:title", async (req, res) => {
+  let requestedChannel = req.params.title;
+  try {
+    let del = await fetchCollection("channelList").deleteOne({
+      title: requestedChannel,
+    });
+    let drop = await fetchCollection(requestedChannel).drop();
+
+    res.status(200).send("channel deleted");
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500); // Internal server error
+  }
 });
 
 // for admin to send emergency message to be broadcast to all users
