@@ -10,9 +10,13 @@ const io = new Server(httpServer, {
   },
 });
 
-// app.post('/message'(req,res) => {
+app.post("/socket/:id", (req, res) => {
+  let channel = req.params.id;
+  let msg = req.body;
+  io.emit(channel, msg);
 
-// })
+  res.sendStatus(200);
+});
 
 io.on("connect", (socket) => {
   socket.emit("new-connection", `User connected`);
