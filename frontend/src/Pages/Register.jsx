@@ -1,16 +1,29 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-
-import PageHeader from "../Components/PageHeader/PageHeader";
-import RegistrationForm from "../Components/RegistrationForm/RegistrationForm";
-import PageFooter from "../Components/PageFooter/PageFooter";
+import "./Styles/Register.css";
 
 function Register() {
+  console.log("/register " + "Can you see this message?");
+
   return (
-    <Router>
-      <Route exact path="/register" Component={RegistrationForm} />
-    </Router>
+    <div className="flex-container">
+      <h1>Welcome!</h1>
+      <p>Register to join us today!</p>
+      <form className="registration-form">
+        <label className="firstname-label">Firstname</label>
+        <input
+          className="firstname-input"
+          placeholder="Enter firstname"></input>
+        <label className="lastname-label">Lastname</label>
+        <input className="lastname-input" placeholder="Enter lastname"></input>
+        <label className="email-label">Email</label>
+        <input className="email-input" placeholder="Enter email"></input>
+        <label className="password-label"></label>
+        <input className="password-input" placeholder="Enter password"></input>
+        <button className="register-btn">Register</button>
+      </form>
+    </div>
   );
 }
 
 export default Register;
+

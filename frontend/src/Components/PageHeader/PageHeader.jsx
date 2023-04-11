@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import HeaderLogo from "../../assets/image/ShitShatLogo.png";
 import "./PageHeader.css";
 
@@ -15,6 +16,19 @@ function PageHeader() {
         alt="Page logo, warning sign containing a radio"
         width="100"
       />
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/register">Sign up</Link>
+          </li>
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }
