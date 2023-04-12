@@ -19,7 +19,7 @@ router.get("/broadcast", async (req, res) => {
 
 // adding middelware,
 // all routes below needs to authorize
-router.use(authFilter.auth);
+
 
 // for all users to se all channels
 router.get("/channel", async (req, res) => {
@@ -31,6 +31,8 @@ router.get("/channel", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
+
+router.use(authFilter.auth);
 
 // connect to channel, user needs to have signed in
 router.get("/channel/:title", async (req, res) => {

@@ -1,35 +1,27 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import HeaderLogo from "../../assets/image/ShitShatLogo.png";
 import "./PageHeader.css";
 
-function PageHeader() {
+function PageHeader(props) {
   return (
-    <div className="header-container">
-      <section className="header-section">
-        <button className="header_return-btn">Back</button>
-        <h2 className="header-title">Kanal 16</h2>
-        <button className="settings-btn">Settings</button>
-      </section>
+    <header className="header-container">
+      <h2 className="header-title">Kanal 16</h2>
       <img
         src={HeaderLogo}
         alt="Page logo, warning sign containing a radio"
         width="100"
       />
       <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/register">Sign up</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-        </ul>
+        {!props.authenticated ? (
+          <>
+            <button>Login</button>
+            <button>Sign-Up</button>
+          </>
+        ) : (
+          <button>Logout</button>
+        )}
       </nav>
-    </div>
+    </header>
   );
 }
 

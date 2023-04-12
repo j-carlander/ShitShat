@@ -1,27 +1,31 @@
-import React from "react";
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-
-import Layout from "./Pages/Layout";
-import Home from "./Pages/Home";
-import Register from "./Pages/Register";
-import Login from "./Pages/Login";
-import NoPage from "./Pages/NoPage.jsx";
-
-
+import PageHeader from "./Components/PageHeader/PageHeader";
+import PageFooter from "./Components/PageFooter/PageFooter";
+import ChannelContainer from "./Components/ChannelContainer/ChannelContainer";
+import MessageContainer from "./Components/MessageContainer/MessageContainer";
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(true);
+  const [currentChannel, setCurrentChannel] = useState("broadcast");
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("authenticated");
+    if (loggedInUser) {
+      setAuthenticated(loggedInUser);
+    }
+  }, []);
+
   return (
-    <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="*" element={<NoPage />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>
+    <div>
+      <PageHeader authenticated={authenticated} />
+      <ChannelContainer
+        authenticated={authenticated}
+        setCurrentChannel={setCurrentChannel}
+      />
+      <MessageContainer currentChannel={currentChannel} />
+      <PageFooter />
+    </div>
   );
 }
 
