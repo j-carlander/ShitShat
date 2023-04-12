@@ -77,15 +77,18 @@ router.post("/channel/:title", async (req, res) => {
   msgBody.recieved = new Date().toLocaleString();
   msgBody.author = req.userDetails.username;
 
-  let checkIfChannelExist = await fetchCollection("channelList").findOne(
-    toChannel
-  );
+  let checkIfChannelExist = await fetchCollection("channelList").findOne({
+    title: toChannel,
+  });
 
   if (checkIfChannelExist) {
     let socketURL = "http://127.0.0.1:3000/socket/" + toChannel;
     let fetchOptions = {
       method: "POST",
-      body: msgBody,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(msgBody),
     };
     let socket = await fetch(socketURL, fetchOptions);
     let created = await fetchCollection(toChannel).insertOne(msgBody);
