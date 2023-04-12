@@ -19,7 +19,7 @@ app.post("/socket/:id", (req, res) => {
   res.sendStatus(200);
 });
 
-io.on("connect", (socket) => {
+io.on("connection", (socket) => {
   socket.emit("new-connection", `User connected`);
 
   socket.on("disconnect", () => console.log("User left"));

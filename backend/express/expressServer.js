@@ -8,6 +8,10 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ msg: "up and running" });
+});
+
 app.use("/auth", auth);
 app.use("/api", router);
 

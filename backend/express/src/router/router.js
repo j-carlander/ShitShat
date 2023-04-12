@@ -6,10 +6,6 @@ dotenv.config();
 
 const router = express.Router();
 
-router.get("/health", (req, res) => {
-  res.status(200).json({ msg: "up and running" });
-});
-
 // for all users to se all emergency messages
 router.get("/broadcast", async (req, res) => {
   try {
@@ -21,6 +17,10 @@ router.get("/broadcast", async (req, res) => {
   }
 });
 
+// adding middelware,
+// all routes below needs to authorize
+router.use(authFilter.auth);
+
 // for all users to se all channels
 router.get("/channel", async (req, res) => {
   try {
@@ -31,10 +31,6 @@ router.get("/channel", async (req, res) => {
     res.status(500).send("Something went wrong");
   }
 });
-
-// adding middelware,
-// all routes below needs to authorize
-router.use(authFilter.auth);
 
 // connect to channel, user needs to have signed in
 router.get("/channel/:title", async (req, res) => {
@@ -86,12 +82,12 @@ router.post("/channel/:title", async (req, res) => {
   );
 
   if (checkIfChannelExist) {
-    let socketURL = "http://127.0.0.1:3000/socket/" + toChannel
+    let socketURL = "http://127.0.0.1:3000/socket/" + toChannel;
     let fetchOptions = {
-      method: 'POST',
-      body: msgBody
-    }
-    let socket = await fetch(socketURL, fetchOptions)
+      method: "POST",
+      body: msgBody,
+    };
+    let socket = await fetch(socketURL, fetchOptions);
     let created = await fetchCollection(toChannel).insertOne(msgBody);
     res.send("message for channel " + toChannel + ", recived");
   } else {
