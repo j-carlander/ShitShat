@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import authFilter from "../filter/authFilters.js";
 import { fetchCollection } from "../mongo/mongoDB.js";
+import { sendToSocketServer } from "../services/socketService.js";
 dotenv.config();
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.get("/broadcast", async (req, res) => {
 // all routes below needs to authorize
 router.use(authFilter.auth);
 
-// for all users to se all channels
+// for all users to se all channels, user needs to have signed in
 router.get("/channel", async (req, res) => {
   try {
     let result = await fetchCollection("channelList").find().toArray();
@@ -32,7 +33,7 @@ router.get("/channel", async (req, res) => {
   }
 });
 
-// connect to channel, user needs to have signed in
+// connect to channel,
 router.get("/channel/:title", async (req, res) => {
   let requestedChannel = req.params.title;
   try {
@@ -53,16 +54,23 @@ router.put("/channel", async (req, res) => {
     let existingChannel = await fetchCollection("channelList").findOne(title);
 
     if (existingChannel) {
+      // prevent user from creating a room that already exist
       res.status(400).send("Room already exist");
       return console.log("existingChannel =", existingChannel.title);
     }
 
     let newChannel = await fetchCollection("channelList").insertOne(title);
+    await sendToSocketServer("channel-list", {
+      // send new room to socket server to broadcast that a new room was created.
+      title: title.title,
+      _id: newChannel.insertedId,
+    });
+
     let createMsg = {
       msg: "Channel created",
       recieved: new Date().toLocaleString(),
     };
-    let created = await fetchCollection(title.title).insertOne(createMsg);
+    await fetchCollection(title.title).insertOne(createMsg);
 
     res.send("new channel created");
   } catch (err) {
@@ -82,16 +90,11 @@ router.post("/channel/:title", async (req, res) => {
   });
 
   if (checkIfChannelExist) {
-    let socketURL = "http://127.0.0.1:3000/socket/" + toChannel;
-    let fetchOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(msgBody),
-    };
-    let socket = await fetch(socketURL, fetchOptions);
-    let created = await fetchCollection(toChannel).insertOne(msgBody);
+    // user can only send messages to rooms that exist
+    await Promise.all([
+      sendToSocketServer(toChannel, msgBody), // sends the message to the socket server for broadcasting on selected channel
+      fetchCollection(toChannel).insertOne(msgBody), // saves the message to the database
+    ]);
     res.send("message for channel " + toChannel + ", recived");
   } else {
     console.log(toChannel + " Does not exist");
@@ -100,17 +103,20 @@ router.post("/channel/:title", async (req, res) => {
 });
 
 //adding middleware
-// all routed below need to be admin
+// all routes below need to be admin
 router.use(authFilter.admin);
 
 // for admin, delete a channel with title
 router.delete("/channel/:title", async (req, res) => {
   let requestedChannel = req.params.title;
   try {
-    let del = await fetchCollection("channelList").deleteOne({
-      title: requestedChannel,
-    });
-    let drop = await fetchCollection(requestedChannel).drop();
+    await Promise.all([
+      fetchCollection("channelList").deleteOne({
+        // removes the channel from the list of channels
+        title: requestedChannel,
+      }),
+      fetchCollection(requestedChannel).drop(), // drops the collection for the channel
+    ]);
 
     res.status(200).send("channel deleted");
   } catch (err) {
@@ -125,7 +131,11 @@ router.post("/broadcast", async (req, res) => {
   msgBody.recieved = new Date().toLocaleString();
   msgBody.author = "Administrator";
 
-  let created = await fetchCollection("broadcast").insertOne(msgBody);
+  await Promise.all([
+    sendToSocketServer("broadcast", msgBody), // send new message to socket server for broadcasting
+    fetchCollection("broadcast").insertOne(msgBody), // save new message to database
+  ]);
+
   res.send("message for channel braodcast, recived");
 });
 
