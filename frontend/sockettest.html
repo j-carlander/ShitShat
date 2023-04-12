@@ -9,6 +9,24 @@
       integrity="sha512-AI5A3zIoeRSEEX9z3Vyir8NqSMC1pY7r5h2cE+9J6FLsoEmSSGLFaqMQw8SWvoONXogkfFrkQiJfLeHLz3+HOg=="
       crossorigin="anonymous"></script>
     <title>Socket test</title>
+
+    <style>
+      .output {
+        width: 300px;
+      }
+      .msg {
+        display: grid;
+        border: 1px solid grey;
+        box-shadow: 3px 3px 5px grey;
+        margin: 1em;
+        padding: 0 1em;
+      }
+      .msg-header {
+        font-size: small;
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
   </head>
   <body>
     <div class="output"></div>
@@ -20,13 +38,33 @@
     <script>
       const socket = io("ws://127.0.0.1:3000", { cors: { orgin: "*" } });
 
+      let output = document.querySelector(".output");
+
       socket.on("new-connection", () => {
         console.log("connected to socket");
       });
 
       socket.on("Testrum_1", (msg) => {
-        console.log("new message recived");
-        console.log(msg);
+        console.log("new message recived, testrum 1: ", msg);
+        let msgContainer = document.createElement("div");
+        msgContainer.innerHTML = `
+        <div class="msg">
+        <p class="msg-header"><em><strong>${msg.author}</strong> </em><em>${msg.recieved}</em></p>
+        <p class="msg-body">${msg.msg}</p>
+      </div>
+      `;
+        output.append(msgContainer);
+      });
+
+      socket.on("rum2", (msg) => {
+        console.log("new message recived, rum 2: ", msg);
+      });
+      socket.on("channel-list", (msg) => {
+        console.log("new channel created: ", msg);
+      });
+
+      socket.on("broadcast", (msg) => {
+        console.log("new broadcast msg: ", msg);
       });
 
       let form = document.querySelector("form");
