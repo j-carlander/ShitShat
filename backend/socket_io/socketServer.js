@@ -15,8 +15,7 @@ app.use(express.json());
 app.post("/socket/:id", (req, res) => {
   let channel = req.params.id;
   let msg = req.body;
-  console.log("req.body: ", req.body);
-  //   io.to(channel).emit(msg);
+
   io.emit(channel, msg);
 
   res.sendStatus(200);
@@ -26,10 +25,6 @@ io.on("connection", (socket) => {
   socket.emit("new-connection", `User connected`);
 
   socket.on("disconnect", () => console.log("User left"));
-  //   socket.on("send-message", (data) => {
-  //     console.log(data);
-  //     socket.broadcast.emit("new-message", data);
-  //   });
 });
 
 httpServer.listen(3000, () => {

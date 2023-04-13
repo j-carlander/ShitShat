@@ -65,6 +65,14 @@
 
       socket.on("broadcast", (msg) => {
         console.log("new broadcast msg: ", msg);
+        let msgContainer = document.createElement("div");
+        msgContainer.innerHTML = `
+        <div class="msg">
+        <p class="msg-header"><em><strong>${msg.author}</strong> </em><em>${msg.recieved}</em></p>
+        <p class="msg-body">${msg.msg}</p>
+      </div>
+      `;
+        output.append(msgContainer);
       });
 
       let form = document.querySelector("form");

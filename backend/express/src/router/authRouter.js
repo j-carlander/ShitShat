@@ -12,7 +12,7 @@ auth.post("/login", async (req, res) => {
   let dbUser = await fetchCollection("users").findOne({
     email: req.body.identifier,
   });
-  console.table(dbUser);
+
   if (!dbUser) return res.status(400).send("wrong username or password");
 
   let passwordMatch = await bcrypt.compare(req.body.password, dbUser.password);

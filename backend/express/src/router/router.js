@@ -39,6 +39,7 @@ router.get("/channel", async (req, res) => {
 // connect to channel,
 router.get("/channel/:title", async (req, res) => {
   let requestedChannel = req.params.title;
+
   try {
     let result = await fetchCollection(requestedChannel).find().toArray();
     res.status(200).json(result);
@@ -50,7 +51,10 @@ router.get("/channel/:title", async (req, res) => {
 
 // create a new channel, user needs to have signed in
 router.put("/channel", async (req, res) => {
-  const title = req.body;
+  const title = req.body.title ? req.body.title : false;
+
+  if (!title) return res.status(400).send("Missing title for new room");
+
   title.title = title.title.toLowerCase().replaceAll(" ", "_");
   console.log("title: ", title);
   try {
@@ -78,6 +82,7 @@ router.put("/channel", async (req, res) => {
     res.send("new channel created");
   } catch (err) {
     console.log(err);
+    res.status(500).send("Something went wrong");
   }
 });
 
@@ -105,13 +110,19 @@ router.post("/channel/:title", async (req, res) => {
   }
 });
 
-//adding middleware
+// adding middleware
 // all routes below need to be admin
 router.use(authFilter.admin);
 
 // for admin, delete a channel with title
 router.delete("/channel/:title", async (req, res) => {
-  let requestedChannel = req.params.title;
+  if (!req.query.confirmed)
+    return res.status(400).send("Room deletion not confirmed");
+
+  let requestedChannel = req.params.title ? req.params.title : false;
+
+  if (!requestedChannel) return res.status(400).send("No room provided");
+
   try {
     await Promise.all([
       fetchCollection("channelList").deleteOne({

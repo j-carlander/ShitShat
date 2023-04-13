@@ -6,7 +6,7 @@ function auth(req, res, next) {
     : undefined;
 
   if (!authHeader)
-    return res.status(400).json({ msg: "Authorization header is missing" }); //bad request
+    return res.status(401).json({ msg: "Authorization header is missing" }); // Unauthorized
 
   const authToken = authHeader.replace("Bearer ", "");
 
