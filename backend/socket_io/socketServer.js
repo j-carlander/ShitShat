@@ -10,9 +10,12 @@ const io = new Server(httpServer, {
   },
 });
 
+app.use(express.json());
+
 app.post("/socket/:id", (req, res) => {
   let channel = req.params.id;
   let msg = req.body;
+  console.log("req.body: ", req.body);
   //   io.to(channel).emit(msg);
   io.emit(channel, msg);
 
