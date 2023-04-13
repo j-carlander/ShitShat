@@ -5,11 +5,14 @@ import PageFooter from "./Components/PageFooter/PageFooter";
 import ChannelContainer from "./Components/ChannelContainer/ChannelContainer";
 import MessageContainer from "./Components/MessageContainer/MessageContainer";
 import { fetchData } from "./Components/DataFetcher/DataFetcher";
+import { LoginForm } from "./Components/LoginForm/LoginForm";
 
 const socket = io("ws://127.0.0.1:3000", { cors: { orgin: "*" } });
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [userDetails, setUserDetails] = useState({});
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [currentChannel, setCurrentChannel] = useState("broadcast");
   const [currentMsgs, setCurrentMsgs] = useState([]);
 
@@ -47,7 +50,10 @@ function App() {
 
   return (
     <div>
-      <PageHeader authenticated={authenticated} />
+      <PageHeader
+        authenticated={authenticated}
+        setShowLoginForm={setShowLoginForm}
+      />
       <div className="flex-wrapper">
         <ChannelContainer
           authenticated={authenticated}
@@ -60,6 +66,13 @@ function App() {
         />
       </div>
       <PageFooter />
+      {showLoginForm && (
+        <LoginForm
+          setUserDetails={setUserDetails}
+          setAuthenticated={setAuthenticated}
+          setShowLoginForm={setShowLoginForm}
+        />
+      )}
     </div>
   );
 }

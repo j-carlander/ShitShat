@@ -3,6 +3,9 @@ import HeaderLogo from "../../assets/image/ShitShatLogo.png";
 import "./PageHeader.css";
 
 function PageHeader(props) {
+  function handleLoginBtn() {
+    props.setShowLoginForm(true);
+  }
   return (
     <header className="header-container">
       <h2 className="header-title">Kanal 16</h2>
@@ -14,7 +17,7 @@ function PageHeader(props) {
       <nav>
         {!props.authenticated ? (
           <>
-            <button>Login</button>
+            <button onClick={handleLoginBtn}>Login</button>
             <button>Sign-Up</button>
           </>
         ) : (
