@@ -113,8 +113,13 @@ router.use(authFilter.admin);
 
 // for admin, delete a channel with title
 router.delete("/channel/:title", async (req, res) => {
-  // TODO: ?? add check for confirmed. e.g. req.query.confirmed=true
-  let requestedChannel = req.params.title;
+  if (!req.query.confirmed)
+    return res.status(400).send("Room deletion not confirmed");
+
+  let requestedChannel = req.params.title ? req.params.title : false;
+
+  if (!requestedChannel) return res.status(400).send("No room provided");
+
   try {
     await Promise.all([
       fetchCollection("channelList").deleteOne({
