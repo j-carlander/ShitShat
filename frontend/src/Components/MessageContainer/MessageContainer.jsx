@@ -3,17 +3,49 @@ import "./MessageContainer.css";
 import Message from "../Message/Message";
 
 function MessageContainer(props) {
-  function handleSendMsg() {}
+  async function handleSendMsg(event) {
+    const value = event.target.previousElementSibling.value;
+
+    // const headersList = {
+    //   authorization: "Bearer " + jwtToken,
+    // }
+
+    await fetch("http://localhost:4500/api/" + props.currentChannel, {
+      method: "POST",
+      body: JSON.stringify({ msg: value }),
+    });
+  }
 
   return (
     <div className="message-container">
-      <h2>{props.currentChannel}</h2>
-      <div className="message-list">{props.currentChannel && <Message />}</div>
+      <h2>
+        {props.currentChannel
+          .replace("channel/", "")
+          .slice(0, 1)
+          .toUpperCase() +
+          props.currentChannel
+            .replace("channel/", "")
+            .slice(1)
+            .replaceAll("_", " ")}
+      </h2>
+      <div className="message-list">
+        <Message currentMsgs={props.currentMsgs} />
+      </div>
       {props.authenticated && props.currentChannel != "broadcast" && (
-        <div>
-          <input placeholder="Skriv ett meddelande" />
-          <button onClick={handleSendMsg}>Skicka</button>
-        </div>
+        <form className="send-msg-form">
+          <input
+            className="msg-input"
+            type="text"
+            name="msg"
+            placeholder="Skriv ett meddelande"
+          />
+          <button
+            className="send-msg-btn"
+            type="submit"
+            onClick={handleSendMsg}>
+            Skicka
+          </button>
+        </form>
       )}
     </div>
   );

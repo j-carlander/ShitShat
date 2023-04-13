@@ -1,18 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ChannelList.css";
+import { fetchData } from "../DataFetcher/DataFetcher";
 
 function ChannelList(props) {
-  function handleClick(event) {
+  const [channelList, setChannelList] = useState([]);
+
+  useEffect(() => {
+    fetchData("channel", setChannelList);
+  }, []);
+
+  function enterChannel(event) {
     const value = event.target.parentNode.dataset.value;
-    props.setCurrentChannel(value);
+    props.setCurrentChannel("channel/" + value);
   }
 
   return (
     <ul className="list-container">
-      {props.roomTitles.map((title) => {
+      {channelList.map((channel) => {
         return (
-          <li key={title} data-value={title}>
-            {title} <button onClick={handleClick}>Join room</button>
+          <li
+            key={channel._id}
+            data-value={channel.title}
+            data-id={channel._id}>
+            {channel.title.slice(0, 1).toUpperCase() +
+              channel.title.slice(1).replaceAll("_", " ")}
+            <button onClick={enterChannel}>Join channel</button>
           </li>
         );
       })}

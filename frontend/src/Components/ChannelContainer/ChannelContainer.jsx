@@ -4,7 +4,7 @@ import ChannelList from "../ChannelList/ChannelList";
 
 function ChannelContainer(props) {
   return (
-    <div className="room-container">
+    <div className="channel-container">
       <button
         onClick={() => {
           props.setCurrentChannel("broadcast");
@@ -12,10 +12,7 @@ function ChannelContainer(props) {
         Broadcast
       </button>
       {props.authenticated && (
-        <ChannelList
-          roomTitles={["hej", "då", "Johannes rum"]}
-          setCurrentChannel={props.setCurrentChannel}
-        />
+        <ChannelList setCurrentChannel={props.setCurrentChannel} />
       )}
     </div>
   );
