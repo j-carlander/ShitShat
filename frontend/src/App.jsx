@@ -27,9 +27,12 @@ function App() {
 
   useEffect(() => {
     fetchData(currentChannel, setCurrentMsgs);
+
     function onSocketEvent(msg) {
-      setCurrentMsgs([...currentMsgs, msg]);
+      console.log("from socket: ", msg);
+      setCurrentMsgs((currentMsgs) => [...currentMsgs, msg]);
     }
+
     socket.on(currentChannel.replace("channel/", ""), onSocketEvent);
 
     return () => {
@@ -37,12 +40,12 @@ function App() {
     };
   }, [currentChannel]);
 
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("authenticated");
-    if (loggedInUser) {
-      setAuthenticated(loggedInUser);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const loggedInUser = sessionStorage.getItem("AUTH_TOKEN");
+  //   if (loggedInUser) {
+  //     setAuthenticated(loggedInUser);
+  //   }
+  // }, []);
 
   // useEffect(() => {
 

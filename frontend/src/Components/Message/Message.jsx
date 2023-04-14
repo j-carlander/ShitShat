@@ -3,21 +3,13 @@ import "./Message.css";
 
 function Message(props) {
   return (
-    <>
-      {props.currentMsgs.map((msg) => {
-        return (
-          <div key={msg._id}>
-            <div className="msg">
-              <p className="msg-header">
-                <span className="msg-author">{msg.author}</span>
-                <span className="msg-recieved">{msg.recieved}</span>
-              </p>
-              <p>{msg.msg}</p>
-            </div>
-          </div>
-        );
-      })}
-    </>
+    <div className="msg">
+      <p className="msg-header">
+        <span className="msg-author">{props.msg.author}</span>
+        <span className="msg-recieved">{props.msg.recieved}</span>
+      </p>
+      <p>{props.msg.msg}</p>
+    </div>
   );
 }
 

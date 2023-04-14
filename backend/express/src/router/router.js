@@ -18,9 +18,6 @@ router.get("/broadcast", async (req, res) => {
   }
 });
 
-
-
-
 // for all users to se all channels, user needs to have signed in
 router.get("/channel", async (req, res) => {
   try {
@@ -34,7 +31,7 @@ router.get("/channel", async (req, res) => {
 
 // adding middelware,
 // all routes below needs to authorize
-// router.use(authFilter.auth);
+router.use(authFilter.auth);
 
 // connect to channel,
 router.get("/channel/:title", async (req, res) => {
@@ -91,7 +88,7 @@ router.post("/channel/:title", async (req, res) => {
   let toChannel = req.params.title;
   let msgBody = req.body;
   msgBody.recieved = new Date().toLocaleString();
-  // msgBody.author = req.userDetails.username;
+  msgBody.author = req.userDetails.username;
 
   let checkIfChannelExist = await fetchCollection("channelList").findOne({
     title: toChannel,

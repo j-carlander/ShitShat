@@ -1,19 +1,37 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./MessageContainer.css";
 import Message from "../Message/Message";
 
 function MessageContainer(props) {
+  const msgRef = useRef();
+
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    if (props.currentChannel != "broadcast") msgRef.current.focus();
+  }, []);
+
   async function handleSendMsg(event) {
-    const value = event.target.previousElementSibling.value;
+    event.preventDefault();
+    let headersList = {
+      Accept: "*/*",
+      Authorization: "Bearer " + sessionStorage.getItem("AUTH_TOKEN"),
+      "Content-Type": "application/json",
+    };
 
-    // const headersList = {
-    //   authorization: "Bearer " + jwtToken,
-    // }
-
-    await fetch("http://localhost:4500/api/" + props.currentChannel, {
-      method: "POST",
-      body: JSON.stringify({ msg: value }),
+    let bodyContent = JSON.stringify({
+      msg: msg,
     });
+
+    let response = await fetch(
+      "http://localhost:4500/api/" + props.currentChannel,
+      {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      }
+    );
+    setMsg("");
   }
 
   return (
@@ -29,20 +47,37 @@ function MessageContainer(props) {
             .replaceAll("_", " ")}
       </h2>
       <div className="message-list">
-        <Message currentMsgs={props.currentMsgs} />
+        {props.currentMsgs.map((msg) => {
+          return (
+            <div key={msg._id}>
+              <Message msg={msg} />
+            </div>
+          );
+        })}
       </div>
-      {props.authenticated && props.currentChannel != "broadcast" && (
+      {props.currentChannel == "broadcast" ? (
         <form className="send-msg-form">
           <input
             className="msg-input"
             type="text"
             name="msg"
             placeholder="Skriv ett meddelande"
+            disabled
           />
-          <button
-            className="send-msg-btn"
-            type="submit"
-            onClick={handleSendMsg}>
+          <button className="send-msg-btn" type="submit" disabled>
+            Skicka
+          </button>
+        </form>
+      ) : (
+        <form className="send-msg-form" onSubmit={handleSendMsg}>
+          <input
+            className="msg-input"
+            type="text"
+            onChange={(e) => setMsg(e.target.value)}
+            placeholder="Skriv ett meddelande"
+            ref={msgRef}
+          />
+          <button className="send-msg-btn" type="submit">
             Skicka
           </button>
         </form>

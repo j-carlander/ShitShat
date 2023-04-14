@@ -66,7 +66,7 @@ export function LoginForm(props) {
           {errMsg}
         </p>
         <form className="login-form" onSubmit={handleSubmit}>
-          <h2>User Login</h2>
+          <h2>User Sign in</h2>
           <div className="input-group">
             <label htmlFor="emailField">email</label>
             <input
@@ -89,9 +89,15 @@ export function LoginForm(props) {
             />
           </div>
           <button id="loginBtn" type="submit">
-            Log in
+            Sign in
           </button>
-          <button id="resetBtn" type="reset">
+          <button
+            id="resetBtn"
+            type="reset"
+            onClick={() => {
+              setEmail("");
+              setPassword("");
+            }}>
             Clear form
           </button>
         </form>
