@@ -40,22 +40,22 @@ function App() {
     };
   }, [currentChannel]);
 
-  // useEffect(() => {
-  //   const loggedInUser = sessionStorage.getItem("AUTH_TOKEN");
-  //   if (loggedInUser) {
-  //     setAuthenticated(loggedInUser);
-  //   }
-  // }, []);
+  function handleSignInBtnClick() {
+    setShowLoginForm(true);
+  }
 
-  // useEffect(() => {
-
-  // }, [currentChannel]);
+  function handleSignOutBtnClick() {
+    setAuthenticated(false);
+    setUserDetails({});
+    sessionStorage.removeItem("AUTH_TOKEN");
+  }
 
   return (
     <div>
       <PageHeader
         authenticated={authenticated}
-        setShowLoginForm={setShowLoginForm}
+        handleSignInBtnClick={handleSignInBtnClick}
+        handleSignOutBtnClick={handleSignOutBtnClick}
       />
       <div className="flex-wrapper">
         <ChannelContainer

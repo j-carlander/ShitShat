@@ -14,13 +14,11 @@ function PageHeader(props) {
       <nav>
         {!props.authenticated ? (
           <>
-            <button onClick={() => props.setShowLoginForm(true)}>
-              Sign in
-            </button>
+            <button onClick={props.handleSignInBtnClick}>Sign in</button>
             <button>Sign Up</button>
           </>
         ) : (
-          <button>Sign out</button>
+          <button onClick={props.handleSignOutBtnClick}>Sign out</button>
         )}
       </nav>
     </header>
