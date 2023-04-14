@@ -1,68 +1,101 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./LoginForm.css";
 
 export function LoginForm(props) {
-  const emailField = useRef();
-  const passwordField = useRef();
+  const emailFieldRef = useRef();
+  const errRef = useRef();
 
-  async function submitForm(e) {
-    const identifier = emailField.current.value;
-    const password = passwordField.current.value;
+  const [errMsg, setErrMsg] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  // focus on email input field when component loads
+  useEffect(() => {
+    emailFieldRef.current.focus();
+  }, []);
+
+  // reset errMsg when email och password retyped
+  useEffect(() => {
+    setErrMsg("");
+  }, [email, password]);
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!identifier || !password) return console.log("missing details");
-    let fetchOptions = {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({
-        identifier: identifier,
-        password: password,
-      }),
+    if (!email || !password) return setErrMsg("missing details");
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
     };
-    let result = await fetch("http://127.0.0.1:4000/auth/login", fetchOptions);
-    let jsonResult = await result.json();
 
-    if (result.status == 200) {
+    let bodyContent = JSON.stringify({
+      identifier: email,
+      password: password,
+    });
+
+    let response = await fetch("http://localhost:4500/auth/login", {
+      method: "POST",
+      body: bodyContent,
+      headers: headersList,
+    });
+
+    if (response.status == 200) {
+      let jsonResult = await response.json();
       sessionStorage.setItem("AUTH_TOKEN", jsonResult.jwt);
-      props.setUserDetails(userDetails);
+      props.setUserDetails(jsonResult.userDetails);
 
       props.setAuthenticated(true);
 
       props.setShowLoginForm(false);
-    } else if (result.status == 400) {
-      p.innerText = jsonResult;
+    } else if (response.status == 400) {
+      setErrMsg(response);
     }
-    serverInfo.append(p);
   }
   return (
-    <div>
-      <form className="login-form">
-        <div className="input-group">
-          <label htmlFor="emailField">email</label>
-          <input
-            type="email"
-            id="emailField"
-            ref={emailField}
-            name="identifier"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="passwordField">Password</label>
-          <input
-            type="password"
-            id="passwordField"
-            ref={passwordField}
-            name="password"
-          />
-        </div>
+    <div className="login-wrapper">
+      <div className="modal">
+        <button
+          className="close-btn"
+          onClick={() => {
+            props.setShowLoginForm(false);
+          }}>
+          X
+        </button>
 
-        <button id="loginBtn" type="submit">
-          Log in
-        </button>
-        <button id="resetBtn" type="reset">
-          Clear form
-        </button>
-      </form>
+        <p ref={errRef} className={errMsg ? "err-msg" : "hidden"}>
+          {errMsg}
+        </p>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2>User Login</h2>
+          <div className="input-group">
+            <label htmlFor="emailField">email</label>
+            <input
+              type="email"
+              id="emailField"
+              ref={emailFieldRef}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="passwordField">Password</label>
+            <input
+              type="password"
+              id="passwordField"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button id="loginBtn" type="submit">
+            Log in
+          </button>
+          <button id="resetBtn" type="reset">
+            Clear form
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

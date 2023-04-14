@@ -1,5 +1,40 @@
+.login-wrapper {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background-color: #00000033;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+}
+.close-btn {
+  align-self: end;
+  margin-bottom: 0.3em;
+}
+
+.login-form {
+  padding: 2em;
+  background-color: aliceblue;
+}
 .input-group {
   position: relative;
   display: grid;
   width: max-content;
+  margin: 1em;
+}
+.login-form button {
+  margin: 1em;
+}
+
+.err-msg {
+  background-color: aliceblue;
+  color: maroon;
+  margin: 0;
+}
+
+.hidden {
+  display: none;
 }
