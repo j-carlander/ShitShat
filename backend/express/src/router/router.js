@@ -52,7 +52,7 @@ router.put("/channel", async (req, res) => {
 
   if (!title) return res.status(400).send("Missing title for new room");
 
-  title.title = title.title.toLowerCase().replaceAll(" ", "_");
+  title = title.toLowerCase().replaceAll(" ", "_");
   console.log("title: ", title);
   try {
     let existingChannel = await fetchCollection("channelList").findOne(title);
@@ -66,7 +66,7 @@ router.put("/channel", async (req, res) => {
     let newChannel = await fetchCollection("channelList").insertOne(title);
     await sendToSocketServer("channel-list", {
       // send new room to socket server to broadcast that a new room was created.
-      title: title.title,
+      title: title,
       _id: newChannel.insertedId,
     });
 
